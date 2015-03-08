@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Digest::SHA qw(sha1_hex);
 use File::Copy qw(move);
+use File::Copy::Recursive qw(rcopy);
 use File::Path qw(mkpath remove_tree);
 
 my ($old_HEAD, $new_HEAD, $branch_checkout) = @ARGV;
@@ -31,17 +32,18 @@ sub message {
 my $old_signature = get_signature($old_HEAD, 'cpanfile');
 my $new_signature = get_signature($new_HEAD, 'cpanfile');
 
-if ($old_signature eq $new_signature) {
-    message 'Both cpanfiles are identical (or non-existent).';
-    exit;
-}
-
 if (-d 'local' && $old_signature) {
     unless (-d local_dir_path($old_signature)) {
         mkpath('.git/carton_local');
         move('local', local_dir_path($old_signature));
         message 'local is saved as ' . local_dir_path($old_signature) . '.';
+    } else {
+        message 'local has been already saved as ' . local_dir_path($old_signature) . '.';
     }
+}
+
+if ($old_signature eq $new_signature) {
+    exit;
 }
 
 if ($new_signature) {
@@ -49,7 +51,7 @@ if ($new_signature) {
         if (-d 'local') {
             remove_tree('local');
         }
-        move(local_dir_path($new_signature), 'local');
+        rcopy(local_dir_path($new_signature), 'local');
         message local_dir_path($new_signature) . ' is restored as local.';
     }
 }
