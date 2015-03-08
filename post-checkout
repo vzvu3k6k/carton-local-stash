@@ -1,0 +1,55 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Digest::SHA qw(sha1_hex);
+use File::Copy qw(move);
+use File::Path qw(mkpath remove_tree);
+
+my ($old_HEAD, $new_HEAD, $branch_checkout) = @ARGV;
+
+exit unless ($branch_checkout);
+
+sub get_signature {
+    my ($branch, $path) = @_;
+    my $content = `git show $branch:$path 2> /dev/null`; # todo: escape
+    if (($? >> 8) != 0) {
+        '';
+    } else {
+        sha1_hex($content);
+    }
+}
+
+sub local_dir_path {
+    my ($signature) = @_;
+    ".git/carton_local/$signature"
+}
+
+sub message {
+    print @_, "\n";
+}
+
+my $old_signature = get_signature($old_HEAD, 'cpanfile');
+my $new_signature = get_signature($new_HEAD, 'cpanfile');
+
+if ($old_signature eq $new_signature) {
+    message 'Both cpanfiles are identical (or non-existent).';
+    exit;
+}
+
+if (-d 'local' && $old_signature) {
+    unless (-d local_dir_path($old_signature)) {
+        mkpath('.git/carton_local');
+        move('local', local_dir_path($old_signature));
+        message 'local is saved as ' . local_dir_path($old_signature) . '.';
+    }
+}
+
+if ($new_signature) {
+    if (-d local_dir_path($new_signature)) {
+        if (-d 'local') {
+            remove_tree('local');
+        }
+        move(local_dir_path($new_signature), 'local');
+        message local_dir_path($new_signature) . ' is restored as local.';
+    }
+}
