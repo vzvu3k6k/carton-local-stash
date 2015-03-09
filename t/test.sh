@@ -2,6 +2,7 @@
 
 set -e # die if any command fails
 set -x # verbose
+export CARTON_LOCAL_STASH_VERBOSE=1
 
 TEMP_REPO=$(mktemp -d)
 GIT_ROOT=$(git rev-parse --show-toplevel)

@@ -26,7 +26,7 @@ sub local_dir_path {
 }
 
 sub message {
-    print @_, "\n";
+    print @_, "\n" if $ENV{CARTON_LOCAL_STASH_VERBOSE};
 }
 
 my $old_signature = get_signature($old_HEAD, 'cpanfile');
