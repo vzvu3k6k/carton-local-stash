@@ -43,14 +43,15 @@ if (-d 'local' && $old_signature) {
 }
 
 if ($old_signature eq $new_signature) {
-    exit;
+    
+}
+
+if (-d 'local') {
+    remove_tree('local');
 }
 
 if ($new_signature) {
     if (-d local_dir_path($new_signature)) {
-        if (-d 'local') {
-            remove_tree('local');
-        }
         rcopy(local_dir_path($new_signature), 'local');
         message local_dir_path($new_signature) . ' is restored as local.';
     }
