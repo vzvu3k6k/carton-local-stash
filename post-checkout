@@ -32,27 +32,41 @@ sub message {
 my $old_signature = get_signature($old_HEAD, 'cpanfile');
 my $new_signature = get_signature($new_HEAD, 'cpanfile');
 
+my $need_to_save = 0;    # To save the current local/
+my $need_to_restore = 0; # To restore local/
+my $need_to_remove = 0;  # To remove the current local/
+
 if (-d 'local' && $old_signature) {
     unless (-d local_dir_path($old_signature)) {
         mkpath('.git/carton_local');
-        move('local', local_dir_path($old_signature));
-        message 'local is saved as ' . local_dir_path($old_signature) . '.';
-    } else {
-        message 'local has been already saved as ' . local_dir_path($old_signature) . '.';
+        $need_to_save = 1;
     }
 }
-
-if ($old_signature eq $new_signature) {
-    
-}
-
-if (-d 'local') {
-    remove_tree('local');
-}
-
-if ($new_signature) {
+if ($new_signature && $old_signature ne $new_signature) {
+    $need_to_remove = 1;
     if (-d local_dir_path($new_signature)) {
-        rcopy(local_dir_path($new_signature), 'local');
-        message local_dir_path($new_signature) . ' is restored as local.';
+        $need_to_restore = 1;
     }
+}
+unless ($new_signature) {
+    $need_to_remove = 1;
+}
+
+if ($need_to_save) {
+    if ($need_to_remove) {
+        move('local', local_dir_path($old_signature));
+        message 'local is moved to ' . local_dir_path($old_signature) . '.';
+    } else {
+        rcopy('local', local_dir_path($old_signature));
+        message 'local is copied to ' . local_dir_path($old_signature) . '.';
+    }
+} elsif ($need_to_remove) {
+    if (-d 'local') {
+        remove_tree('local');
+        message 'local is removed.';
+    }
+}
+if ($need_to_restore) {
+    rcopy(local_dir_path($new_signature), 'local');
+    message local_dir_path($new_signature) . ' is copied to local.';
 }
