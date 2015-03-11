@@ -9,6 +9,11 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cp "$GIT_ROOT/post-checkout" "$TEMP_REPO"
 cd "$TEMP_REPO"
 git init
+
+# set dummy identities for Travis CI
+git config --local user.email "test@example.com"
+git config --local user.name "test"
+
 mv post-checkout .git/hooks
 
 git commit --allow-empty -m empty
