@@ -8,6 +8,7 @@ TEMP_REPO=$(mktemp -d)
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cp "$GIT_ROOT/post-checkout" "$TEMP_REPO"
 cd "$TEMP_REPO"
+git --version
 git init
 
 # set dummy identities for Travis CI
