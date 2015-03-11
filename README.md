@@ -12,7 +12,7 @@ See also: [carton - cpanfileから消したはずの依存がcpanfile.snapshot�
 
 ## Requirements
 
-- perl 5 (tested on v5.20.2)
+- perl 5 (tested on v5.8 and v5.20)
   - You have to install [File::Copy::Recursive](http://search.cpan.org/~dmuey/File-Copy-Recursive-0.38/Recursive.pm).
 
 ## Limitations
