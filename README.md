@@ -22,3 +22,7 @@ See also: [carton - cpanfileから消したはずの依存がcpanfile.snapshot�
 ## License
 
 [Creative Commons — CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
+
+## Build Status
+
+[![Build Status](https://travis-ci.org/vzvu3k6k/carton-local-stash.svg?branch=master)](https://travis-ci.org/vzvu3k6k/carton-local-stash)
